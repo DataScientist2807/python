@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>Page Title</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="">
+<style>
+</style>
+<link rel="stylesheet" href="prism.css">
+<body>
+
+<img src="img_la.jpg" alt="LA" style="width:100%">
+
+<div class="">
+ <h1>This is a Heading</h1>
+ <p>This is a paragraph.</p>
+ <p>This is another paragraph.</p>
+</div>
+
+
+<h2>Load data from json file</h2>
+<div class="subtitle">For our data we use three json files which can be loaded via json.load(). Mandatory is the library json which we can import via 'import json' at the beginning of the script.</div>
+<pre><code class="language-python">f = open("datas1.json",)
+season1 = json.load(f)
+f.close()
+
+f = open("datas2.json",)
+season2 = json.load(f)
+f.close()
+
+f = open("datas3.json",)
+season3 = json.load(f)
+f.close()
+</code></pre>
+
+
+<h2>Store data in Dataframes</h2>
+<div class="subtitle">Pandas comes with 'from_dict' to convert the json object into Pandas Dataframe</div>
+
+<pre><code class="language-python">season1 = pd.DataFrame.from_dict(season1)
+season2 = pd.DataFrame.from_dict(season2)
+season3 = pd.DataFrame.from_dict(season3)
+</code></pre>
+
+<div class="box">
+	<h2>Load data from dictionary</h2>
+	<pre><code class="language-python">season3.dtypes</code></pre>
+	<h3>Output</h3>
+	<img src="Screenshot_002.png" alt="">
+</div>
+
+
+<h2>Head</h2>
+<pre><code class="language-python">season1.head()</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_003.png" alt="">
+
+
+<h2>Tail</h2>
+<pre><code class="language-python">season1.tail()</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_004.png" alt="">
+
+<h2>How to convert object to datetime?</h2>
+<pre><code class="language-python">season1["played_at"] = season1["played_at"].astype("datetime64[ns]")
+season2.played_at = season2.played_at.astype("datetime64[ns]") 
+season3.played_at = season3.played_at.astype("datetime64[ns]") 
+season1.dtypes</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_006.png" alt="">
+
+<h2>Check for unique teams</h2>
+<pre><code class="language-python">season1.hometeam.unique()</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_007.png" alt="">
+
+<h2>Sorting? You need numpy. We store it in avariable because we will need this later</h2>
+<pre><code class="language-python">arr1 = np.sort(season1.hometeam.unique())</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_008.png" alt="">
+
+<h2>We can also ude sort_values to get the same result</h2>
+<pre><code class="language-python">arr2 = season1.hometeam.sort_values().unique()</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_008.png" alt="">
+
+
+<h2>Comparing both array it returns true</h2>
+<pre><code class="language-python">(arr1==arr2).all()</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_009.png" alt="">
+
+<h2>Let's change one element by index 1</h2>
+<pre><code class="language-python">arr1[1] = "Dortmund"</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_010.png" alt="">
+
+
+<h2>Now it will return false</h2>
+<pre><code class="language-python">(arr1==arr2).all()</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_011.png" alt="">
+
+<h2>Merging all dataframes with pd.concat - be aware that 'append' is deprecated</h2>
+<pre><code class="language-python">df_games = pd.DataFrame()
+df_games = pd.concat([df_games,season1])
+df_games = pd.concat([df_games,season2])
+df_games = pd.concat([df_games,season3])
+df_games.info()
+</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_012.png" alt="">
+
+
+<h2>We now want to seperate the results</h2>
+<pre><code class="language-python">df_games.head(9)
+</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_013.png" alt="">
+
+<h2>We now want to seperate the results</h2>
+<pre><code class="language-python">df_games["hthg"], df_games["htag1"] = zip(*df_games["first_result"].str.split("-").tolist())
+df_games["fthg1"], df_games["ftag"] = zip(*df_games["second_result"].str.split("-").tolist())
+df_games.head(9)
+</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_014.png" alt="">
+
+
+<h2>Check columns</h2>
+<pre><code class="language-python">df_games.columns
+</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_015.png" alt="">
+
+<h2>Check index</h2>
+<pre><code class="language-python">df_games.index
+</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_016.png" alt="">
+
+
+<h2>Unique index</h2>
+<pre><code class="language-python">len(df_games.index.unique())
+</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_017.png" alt="">
+
+<h2>Reset index</h2>
+<pre><code class="language-python">df_games.reset_index(drop=True, inplace=True)
+df_games.index
+</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_018.png" alt="">
+
+
+<h2>We can also use another range for index</h2>
+<pre><code class="language-python">i = list(range(50, len(df_games)+50))
+s = pd.Series(i)
+df_games = df_games.set_index(s)
+df_games.index
+</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_019.png" alt="">
+
+<h2>Index check</h2>
+<pre><code class="language-python">len(df_games.index.unique())
+</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_020.png" alt="">
+
+<h2>Rename columns</h2>
+<pre><code class="language-python">df_games.rename(columns={"htag1": "htag", "fthg1": "fthg"}, inplace=True)
+</code></pre>
+<h3>Output</h3>
+<img src="Screenshot_021.png" alt="">
+
+
+<script src="prism.js"></script>
+<style>
+.subtitle{
+	color: grey;
+}
+
+.box{
+	background-color: grey;
+	border-radius: 10px;
+	border-color: black;
+	border-bottom-width: 2px;
+}
+	
+</style>
+</body>
+</html>
